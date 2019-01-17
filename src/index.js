@@ -1,18 +1,13 @@
 const bs58 = require("bs58");
-const jsonld = require("jsonld");
-const crypto = require("crypto");
 
 const createVerifyData = require("./createVerifyData");
 const suite = require("./suite");
 
 const verify = async ({ data, publicKey }) => {
-  const [expanded] = await jsonld.expand(data);
-  const framed = await jsonld.compact(
-    expanded,
-    "https://w3id.org/security/v2",
-    { skipExpansion: true }
+  const { framed, verifyDataHexString } = await createVerifyData(
+    data,
+    data.proof
   );
-  const verifyDataHexString = await createVerifyData(framed, data.proof);
   const verifyDataBuffer = Buffer.from(verifyDataHexString, "hex");
   const verifyDataUint8Array = new Uint8Array(
     verifyDataBuffer.buffer,
@@ -27,29 +22,10 @@ const verify = async ({ data, publicKey }) => {
 };
 
 const sign = async ({ data, privateKey, signatureOptions }) => {
-  if (signatureOptions.creator) {
-    signatureOptions.verificationMethod = signatureOptions.creator;
-  }
-  if (!signatureOptions.verificationMethod) {
-    throw new Error("signatureOptions.verificationMethod is required");
-  }
-  if (!signatureOptions.created) {
-    signatureOptions.created = new Date().toISOString();
-  }
-
-  if (!signatureOptions.nonce) {
-    signatureOptions.nonce = crypto.randomBytes(16).toString("hex")
-  }
-
-  signatureOptions.type = "Ed25519Signature2018";
-
-  const [expanded] = await jsonld.expand(data);
-  const framed = await jsonld.compact(
-    expanded,
-    "https://w3id.org/security/v2",
-    { skipExpansion: true }
+  const { framed, verifyDataHexString } = await createVerifyData(
+    data,
+    signatureOptions
   );
-  const verifyDataHexString = await createVerifyData(framed, signatureOptions);
   const verifyDataBuffer = Buffer.from(verifyDataHexString, "hex");
   const verifyDataUint8Array = new Uint8Array(
     verifyDataBuffer.buffer,

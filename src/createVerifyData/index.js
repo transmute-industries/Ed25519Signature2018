@@ -29,13 +29,37 @@ const cannonizeDocument = doc => {
 };
 
 const createVerifyData = async (data, signatureOptions) => {
+  if (signatureOptions.creator) {
+    signatureOptions.verificationMethod = signatureOptions.creator;
+  }
+  if (!signatureOptions.verificationMethod) {
+    throw new Error("signatureOptions.verificationMethod is required");
+  }
+  if (!signatureOptions.created) {
+    signatureOptions.created = new Date().toISOString();
+  }
+  if (!signatureOptions.type === "Ed25519Signature2018") {
+    signatureOptions.type = "Ed25519Signature2018";
+  }
+  const [expanded] = await jsonld.expand(data);
+  const framed = await jsonld.compact(
+    expanded,
+    "https://w3id.org/security/v2",
+    { skipExpansion: true }
+  );
+
   const cannonizedSignatureOptions = await cannonizeSignatureOptions(
     signatureOptions
   );
   const hashOfCannonizedSignatureOptions = sha256(cannonizedSignatureOptions);
-  const cannonizedDocument = await cannonizeDocument(data);
+  const cannonizedDocument = await cannonizeDocument(framed);
   const hashOfCannonizedDocument = sha256(cannonizedDocument);
-  return hashOfCannonizedSignatureOptions + hashOfCannonizedDocument;
+
+  return {
+    framed,
+    verifyDataHexString:
+      hashOfCannonizedSignatureOptions + hashOfCannonizedDocument
+  };
 };
 
 module.exports = createVerifyData;

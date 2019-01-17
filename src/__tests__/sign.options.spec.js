@@ -20,7 +20,7 @@ describe("Ed25519Signature2018", () => {
     expect(signed.proof.creator).toBe("https://example.com/i/alice/keys/2");
   });
 
-  it("supports automatic created, nonce", async () => {
+  it("supports automatic created", async () => {
     expect.assertions(2);
     const signed = await sign({
       data: fixtures.data.authentication.plain,
@@ -28,7 +28,8 @@ describe("Ed25519Signature2018", () => {
         challenge: "abc",
         domain: "example.com",
         proofPurpose: "authentication",
-        creator: "https://example.com/i/alice/keys/2"
+        creator: "https://example.com/i/alice/keys/2",
+        nonce: "0x123"
       },
       privateKey:
         fixtures.keypairs.alice.Ed25519VerificationKey2018.privateKeyBase58
