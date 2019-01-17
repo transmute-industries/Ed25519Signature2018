@@ -1,0 +1,32 @@
+{
+  "name": "@transmute/ed25519signature2018",
+  "version": "0.1.0",
+  "description": "",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "jest --env node --coverage --testPathIgnorePatterns __fixtures__ -- ",
+    "codecov": "codecov",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/transmute-industries/Ed25519Signature2018.git"
+  },
+  "author": "Orie Steele",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/transmute-industries/Ed25519Signature2018/issues"
+  },
+  "homepage": "https://github.com/transmute-industries/Ed25519Signature2018#readme",
+  "devDependencies": {
+    "codecov": "^3.1.0",
+    "coveralls": "^3.0.2",
+    "jest": "^23.6.0"
+  },
+  "dependencies": {
+    "bs58": "^4.0.1",
+    "chloride": "^2.2.10",
+    "jsonld": "^1.2.1",
+    "jsonld-signatures": "^3.1.2"
+  }
+}
