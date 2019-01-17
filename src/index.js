@@ -1,5 +1,6 @@
 const bs58 = require("bs58");
 const jsonld = require("jsonld");
+const crypto = require("crypto");
 
 const createVerifyData = require("./createVerifyData");
 const suite = require("./suite");
@@ -32,9 +33,12 @@ const sign = async ({ data, privateKey, signatureOptions }) => {
   if (!signatureOptions.verificationMethod) {
     throw new Error("signatureOptions.verificationMethod is required");
   }
-
   if (!signatureOptions.created) {
     signatureOptions.created = new Date().toISOString();
+  }
+
+  if (!signatureOptions.nonce) {
+    signatureOptions.nonce = crypto.randomBytes(16).toString("hex")
   }
 
   signatureOptions.type = "Ed25519Signature2018";
